@@ -1,4 +1,4 @@
-import type { ZodType } from 'zod';
+import type { ZodType } from 'zod/v4';
 
 export type DisplayResult =
   | { type: 'text'; content: string }

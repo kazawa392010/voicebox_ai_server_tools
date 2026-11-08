@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from 'zod/v4';
 import type { AppConfig } from '../../config/env.js';
 import { AppError } from '../../core/errors.js';
 import type { ToolRegistry } from '../../core/tool-registry.js';

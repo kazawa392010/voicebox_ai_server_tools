@@ -107,6 +107,10 @@ Chi tiết từng bước, lệnh kiểm tra API và cách kết nối backend X
 
 Render Free có thể spin down khi không có traffic; RAM và bitmap asset cache bị mất khi process restart/sleep. Không dùng self-ping hoặc cron để né giới hạn. Đọc [`docs/RENDER_DEPLOY.md`](docs/RENDER_DEPLOY.md) và [BUILD_STATUS.md](BUILD_STATUS.md) trước khi triển khai thật.
 
+## Sửa lỗi build Render ngày 2026-11-08
+
+Nếu repository được deploy từ commit cũ và gặp lỗi TypeScript ở `app.ts`, `mcp-server.ts` hoặc `raster.ts`, áp dụng bản vá kèm theo `FIX_RENDER_TYPESCRIPT.md`. Bản vá giữ strict TypeScript, dùng Zod v4 cho MCP SDK v2 và không tắt kiểm tra kiểu. Xem `BUILD_STATUS.md` để phân biệt kiểm tra cú pháp đã chạy với full build/test chưa được xác minh do giới hạn kết nối npm trong môi trường tạo bundle.
+
 ## Kiểm thử
 
 ```bash

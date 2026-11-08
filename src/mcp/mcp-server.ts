@@ -10,8 +10,8 @@ export function registerMcpRoute(app: FastifyInstance, registry: ToolRegistry, e
     for (const tool of registry.list()) {
       server.registerTool(tool.name, {
         description: tool.description,
-        inputSchema: tool.validator as never
-      }, async (args) => {
+        inputSchema: tool.validator
+      }, async (args: unknown) => {
         const result = await executor.execute(tool.name, args);
         const response: { content: Array<{ type: 'text'; text: string }>; isError?: boolean; structuredContent?: Record<string, unknown> } = {
           content: [{ type: 'text', text: JSON.stringify(result) }],
@@ -25,7 +25,7 @@ export function registerMcpRoute(app: FastifyInstance, registry: ToolRegistry, e
   });
   const nodeHandler = toNodeHandler(handler);
   app.all('/mcp', async (request, reply) => {
-    await nodeHandler(request.raw, reply.raw, request.body);
+    await nodeHandler(request.raw as unknown as Parameters<typeof nodeHandler>[0], reply.raw, request.body);
   });
   app.addHook('onClose', async () => { await handler.close(); });
 }

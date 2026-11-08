@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from 'zod/v4';
 import { decodeImageToRaster } from '../graphics/raster.js';
 import { drawTinyText } from '../graphics/bitmap-font.js';
 import type { AppConfig } from '../../config/env.js';

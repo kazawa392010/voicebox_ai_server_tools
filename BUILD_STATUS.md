@@ -1,46 +1,44 @@
 # Build and verification status
 
-Verification date: 2026-11-08
+Updated: 2026-11-08
 
-## Verified in this environment
+## Render build log supplied by user
 
-- Runtime: Node.js 22.16.0, npm 10.9.2.
+Commit `060c7185c39aa057215e17d5e16469e5082d1382` completed dependency installation successfully, then failed in `tsc -p tsconfig.json`.
+
+The source patch in this bundle addresses the reported diagnostics:
+
+- `src/app.ts`: Fastify `trustProxy` option, raw-server instance generic mismatch, and safe narrowing of unknown errors.
+- `src/mcp/mcp-server.ts`: MCP SDK v2 Standard Schema registration, callback argument typing, and Node adapter request typing.
+- `src/tools/graphics/raster.ts`: fixed-length tuple typing for rasterizer coordinate arrays.
+- Zod imports consistently use `zod/v4`; the stub `@types/jpeg-js` dev dependency was removed.
+
+TypeScript strictness remains enabled (`strict: true`, `noUncheckedIndexedAccess: true`, `exactOptionalPropertyTypes: true`).
+
+## Verification in this environment
+
+- Node.js: `v22.16.0`; global TypeScript CLI: `5.8.3`.
+- All TypeScript files pass syntax transpilation checks using the globally available TypeScript compiler API.
 - `package.json` parses as valid JSON.
-- `render.yaml` parses as YAML; Render environment-variable boolean values are quoted strings.
-- All 38 TypeScript source and test files pass TypeScript `transpileModule` syntax diagnostics (zero syntax diagnostics).
-- Strict TypeScript type-check passed for the dependency-independent modules: core errors, random ID helper, asset store, memory cache, bounded fetch helpers, logger, VietSchool CSV parser, and safe expression parser.
-- Standalone runtime checks passed for the CSV parser (comma/semicolon delimiters, decimal comma, quoted multiline cells, malformed quote rejection) and safe math parser (precedence, implicit multiplication, powers, and unsafe expression rejection).
-- Independent runtime checks passed for bounded asset storage, RGB565 byte length/endianness, bounded memory cache, and upstream response byte limits in the previous verification pass. AssetStore now also validates dimensions, pixel format, and exact `width * height * 2` byte length before accepting an asset.
-- XiaoZhi integration documentation now includes the upstream `data/.mcp_server_settings.json` configuration shape for remote `streamable-http` MCP servers (`url`, `transport`, and Bearer `headers`). The upstream sample currently documents this transport.
+- `render.yaml` parses as valid YAML.
+- Code review confirms the changes map directly to the user-provided compiler diagnostics.
 
-## Not verified here
+## Not verified
 
-The project dependencies could not be downloaded. `npm view fastify version` and `npm install` fail because this environment cannot resolve `registry.npmjs.org` (`EAI_AGAIN`); offline installation also has no cached dependency packages. Therefore:
+A dependency-backed build and test suite have **not** been run here. `npm install` fails before downloading dependencies because DNS resolution for `registry.npmjs.org` returns `EAI_AGAIN`. Do not treat the patch as a confirmed successful production build until Render completes `yarn build` (or `npm run build`) and `npm test` passes.
 
-- `npm run build` has **not** been run successfully.
-- `npm test` has **not** been executed.
-- Fastify, MCP SDK, image decoder, and provider integration tests have not run as a full suite.
-- The remote connection to a live XiaoZhi backend has not been tested. The exact deployed XiaoZhi tag and its MCP client protocol support must still be checked.
+## Verify after pushing
 
-## Run after network access is available
+The Render log shows Yarn successfully installed dependencies, so it is acceptable to keep the current service's build command:
 
 ```bash
-npm install
-npm run check
+yarn install && yarn build
 ```
 
-`npm run check` runs the TypeScript build followed by the test suite. The first successful `npm install` will create `package-lock.json`; commit that generated lockfile to make subsequent installs reproducible. Render's build command installs dev dependencies explicitly because TypeScript is a build-time dependency:
+After the TypeScript build succeeds, run the tests locally or change Render's temporary build command to:
 
 ```bash
-npm install --include=dev --no-audit --no-fund && npm run build
+yarn install && yarn build && yarn test
 ```
 
-Do not enable external providers until their credentials and usage terms have been configured and reviewed. `VIETSCHOOL_ENABLED`, `MUSIC_ENABLED`, `IMAGE_ENABLED`, and `MAP_ENABLED` default to false.
-
-## Render deployment bundle update (2026-11-08)
-
-- Added root-level `DEPLOY_RENDER.md` with GitHub upload, Render Blueprint apply, post-deploy health check, REST smoke request, MCP endpoint and XiaoZhi integration steps.
-- Updated `render.yaml` for a Node Web Service on the Free plan in the Singapore region; it builds with dev dependencies, starts via `npm start`, checks `/health`, limits concurrency/assets for the small instance, and generates `DEVICE_API_KEY` with Render's `generateValue` support.
-- Updated README deployment instructions and added `.nvmrc` selecting Node 22.
-- `render.yaml` was parsed successfully with a YAML parser after the update. This validates YAML syntax, not Render's remote provisioning or an actual deploy.
-- A fresh `npm install --include=dev --no-audit --no-fund` attempt timed out in this environment. No `package-lock.json` was generated. Full `npm run build` and integration tests remain unverified; do not treat this package as a successfully deployed service yet.
+Do not make the test suite part of every production deploy permanently unless the deployment pipeline is intended to run tests there; a dedicated CI workflow is preferable.

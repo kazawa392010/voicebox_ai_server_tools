@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 const bool = (fallback: boolean) => z.preprocess((v) => {
   if (typeof v === 'boolean') return v;

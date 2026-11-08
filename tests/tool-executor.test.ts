@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 import { ToolExecutor } from '../src/core/tool-executor.js';
 import { ToolRegistry } from '../src/core/tool-registry.js';
 

@@ -44,7 +44,8 @@ export class Raster {
         this.line(cx - x, cy + y, cx + x, cy + y, color); this.line(cx - x, cy - y, cx + x, cy - y, color);
         this.line(cx - y, cy + x, cx + y, cy + x, color); this.line(cx - y, cy - x, cx + y, cy - x, color);
       } else {
-        for (const [px, py] of [[x,y], [y,x], [-y,x], [-x,y], [-x,-y], [-y,-x], [y,-x], [x,-y]]) this.pixel(cx + px, cy + py, color);
+        const octants: ReadonlyArray<readonly [number, number]> = [[x,y], [y,x], [-y,x], [-x,y], [-x,-y], [-y,-x], [y,-x], [x,-y]];
+        for (const [px, py] of octants) this.pixel(cx + px, cy + py, color);
       }
       y += 1; if (err < 0) err += 2 * y + 1; else { x -= 1; err += 2 * (y - x) + 1; }
     }
@@ -54,7 +55,8 @@ export class Raster {
     const minY = Math.max(0, Math.floor(Math.min(ay, by, cy))), maxY = Math.min(this.height - 1, Math.ceil(Math.max(ay, by, cy)));
     for (let y = minY; y <= maxY; y += 1) {
       const intersections: number[] = [];
-      for (const [x1,y1,x2,y2] of [[ax,ay,bx,by],[bx,by,cx,cy],[cx,cy,ax,ay]]) {
+      const edges: ReadonlyArray<readonly [number, number, number, number]> = [[ax,ay,bx,by],[bx,by,cx,cy],[cx,cy,ax,ay]];
+      for (const [x1,y1,x2,y2] of edges) {
         if ((y1 <= y && y2 > y) || (y2 <= y && y1 > y)) intersections.push(x1 + (y - y1) * (x2 - x1) / (y2 - y1));
       }
       if (intersections.length >= 2) this.line(Math.min(...intersections), y, Math.max(...intersections), y, color);

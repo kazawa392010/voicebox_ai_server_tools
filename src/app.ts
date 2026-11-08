@@ -18,7 +18,7 @@ import { registerMapTools } from './tools/map/index.js';
 
 export interface AppContext { app: FastifyInstance; registry: ToolRegistry; executor: ToolExecutor; assets: AssetStore; }
 export async function buildApp(config: AppConfig): Promise<AppContext> {
-  const app = Fastify({ logger: false, bodyLimit: config.requestBodyLimitBytes, disableRequestLogging: true, trustProxy: 1 });
+  const app: FastifyInstance = Fastify({ logger: false, bodyLimit: config.requestBodyLimitBytes, disableRequestLogging: true, trustProxy: false });
   const assets = new AssetStore(config.assetTtlSeconds, config.assetMaxCount, config.assetMaxBytes);
   const registry = new ToolRegistry();
   registerSearchTool(registry, config);
@@ -40,9 +40,12 @@ export async function buildApp(config: AppConfig): Promise<AppContext> {
     if (!authenticate(config, request, reply)) return reply;
   });
   app.setErrorHandler((error, _request, reply) => {
-    if (error.statusCode === 413) return reply.code(413).send({ ok: false, error: { code: 'PAYLOAD_TOO_LARGE', message: 'Request vượt giới hạn kích thước.' } });
-    const status = error.statusCode && error.statusCode >= 400 && error.statusCode < 600 ? error.statusCode : 500;
-    return reply.code(status).send({ ok: false, error: { code: 'INTERNAL_ERROR', message: status >= 500 ? 'Server gặp lỗi nội bộ.' : error.message } });
+    const statusCode = typeof error === 'object' && error !== null && 'statusCode' in error
+      && typeof error.statusCode === 'number' ? error.statusCode : undefined;
+    const message = error instanceof Error ? error.message : 'Lỗi không xác định.';
+    if (statusCode === 413) return reply.code(413).send({ ok: false, error: { code: 'PAYLOAD_TOO_LARGE', message: 'Request vượt giới hạn kích thước.' } });
+    const status = statusCode && statusCode >= 400 && statusCode < 600 ? statusCode : 500;
+    return reply.code(status).send({ ok: false, error: { code: 'INTERNAL_ERROR', message: status >= 500 ? 'Server gặp lỗi nội bộ.' : message } });
   });
 
   registerHealthRoutes(app, registry, assets);

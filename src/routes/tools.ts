@@ -1,5 +1,5 @@
 import type { FastifyInstance } from 'fastify';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 import type { ToolExecutor } from '../core/tool-executor.js';
 import type { ToolRegistry } from '../core/tool-registry.js';
 import { randomId } from '../utils/id.js';
