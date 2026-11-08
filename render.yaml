@@ -1,0 +1,52 @@
+# Render Blueprint for VoiceBox AI Tool Server.
+# Deploy from the Render Dashboard: New -> Blueprint -> select this repository.
+services:
+  - type: web
+    name: voicebox-ai-tool-server
+    runtime: node
+    region: singapore
+    plan: free
+    buildCommand: npm install --include=dev --no-audit --no-fund && npm run build
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+      - key: NODE_OPTIONS
+        value: --max-old-space-size=384
+      - key: DEVICE_API_KEY
+        generateValue: true
+      - key: REQUEST_BODY_LIMIT_BYTES
+        value: "262144"
+      - key: REQUEST_TIMEOUT_MS
+        value: "12000"
+      - key: MAX_CONCURRENT_TOOLS
+        value: "2"
+      - key: RATE_LIMIT_MAX
+        value: "60"
+      - key: DISPLAY_WIDTH
+        value: "128"
+      - key: DISPLAY_HEIGHT
+        value: "160"
+      - key: BITMAP_FORMAT
+        value: RGB565
+      - key: BITMAP_ENDIAN
+        value: LE
+      - key: ASSET_TTL_SECONDS
+        value: "90"
+      - key: ASSET_MAX_COUNT
+        value: "16"
+      - key: ASSET_MAX_BYTES
+        value: "1048576"
+      - key: SEARCH_ENABLED
+        value: "true"
+      - key: VIETSCHOOL_ENABLED
+        value: "false"
+      - key: MUSIC_ENABLED
+        value: "false"
+      - key: IMAGE_ENABLED
+        value: "false"
+      - key: MAP_ENABLED
+        value: "false"

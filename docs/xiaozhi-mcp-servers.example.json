@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "VoiceBox AI Tool Server": {
+      "url": "https://YOUR_RENDER_HOST/mcp",
+      "transport": "streamable-http",
+      "headers": {
+        "Authorization": "Bearer REPLACE_WITH_DEVICE_API_KEY"
+      }
+    }
+  }
+}

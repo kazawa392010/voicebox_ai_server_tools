@@ -1,0 +1,33 @@
+{
+  "name": "voicebox-ai-tool-server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Lightweight stateless MCP/REST tool gateway for ESP32-S3 VoiceBox AI",
+  "type": "module",
+  "engines": {
+    "node": "22.x"
+  },
+  "scripts": {
+    "dev": "node --env-file-if-exists=.env --import tsx --watch src/index.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node --env-file-if-exists=.env dist/index.js",
+    "test": "tsx --test tests/*.test.ts",
+    "check": "npm run build && npm test"
+  },
+  "dependencies": {
+    "@fastify/rate-limit": "^10.3.0",
+    "@modelcontextprotocol/node": "^2.0.0",
+    "@modelcontextprotocol/server": "^2.0.0",
+    "fastify": "^5.6.2",
+    "jpeg-js": "^0.4.4",
+    "pngjs": "^7.0.0",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@types/jpeg-js": "^0.3.7",
+    "@types/node": "^22.15.30",
+    "@types/pngjs": "^6.0.5",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  }
+}
